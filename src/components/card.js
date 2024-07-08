@@ -1,8 +1,14 @@
-import { openModal } from "./modal.js";
-import { cardTemplate } from "../index.js";
+// @todo: Темплейт карточки
+export const cardTemplate = document.querySelector("#card-template").content;
 
 // @todo: Функция создания карточки
-export function createCard(item, removeCard, ImagePopup, buttonIsLiked) {
+export function createCard(
+  cardTemplate,
+  item,
+  removeCard,
+  openImagePopup,
+  likedButton,
+) {
   const cardElement = cardTemplate
     .querySelector(".places__item")
     .cloneNode(true);
@@ -19,10 +25,10 @@ export function createCard(item, removeCard, ImagePopup, buttonIsLiked) {
   deleteButton.addEventListener("click", removeCard);
 
   cardImage.addEventListener("click", function () {
-    ImagePopup(item);
+    openImagePopup(item);
   });
 
-  cardLikeButton.addEventListener("click", buttonIsLiked);
+  cardLikeButton.addEventListener("click", likedButton);
 
   return cardElement;
 }
@@ -33,24 +39,7 @@ export function removeCard(evt) {
   listItem.remove();
 }
 
-// Функция открытия поп-апа для картинок
-const popupTypeImage = document.querySelector(".popup_type_image");
-const popupImage = popupTypeImage.querySelector(".popup__image");
-
-export function ImagePopup(image) {
-  const popupCaption = popupTypeImage.querySelector(".popup__caption");
-
-  popupImage.src = image.link;
-  popupImage.alt = image.name;
-  popupCaption.textContent = image.name;
-  openModal(popupTypeImage);
-}
-
 // Функция лайка
-export function buttonIsLiked(evt) {
-  if (evt.target.classList.contains("card__like-button_is-active")) {
-    evt.target.classList.remove("card__like-button_is-active");
-  } else {
-    evt.target.classList.add("card__like-button_is-active");
-  }
+export function likedButton(evt) {
+  evt.target.classList.toggle("card__like-button_is-active");
 }

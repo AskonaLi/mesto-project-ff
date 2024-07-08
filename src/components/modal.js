@@ -1,4 +1,4 @@
-import { allPopups } from "../index.js";
+export const allPopups = document.querySelectorAll(".popup");
 
 // Функция добавления класса popup_is-opened
 export function openModal(item) {
@@ -15,11 +15,7 @@ export function closeModal(item) {
 // Функция закрытия через Esc
 export function closeByEsc(evt) {
   if (evt.key === "Escape") {
-    allPopups.forEach(function (item) {
-      if (item.classList.contains("popup_is-opened")) {
-        closeModal(item);
-      }
-    });
+    closeModal(document.querySelector(".popup_is-opened"));
   }
 }
 

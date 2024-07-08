@@ -1,52 +1,23 @@
 import "./pages/index.css";
 
 import { initialCards } from "./scripts/cards.js";
+
 import {
+  cardTemplate,
   createCard,
   removeCard,
-  ImagePopup,
-  buttonIsLiked,
+  likedButton,
 } from "./components/card.js";
+
 import {
+  allPopups,
   openModal,
   closeModal,
   closePopupOverlay,
 } from "./components/modal.js";
 
-// @todo: Темплейт карточки
-export const cardTemplate = document.querySelector("#card-template").content;
-
 // @todo: DOM узлы
 const placesList = document.querySelector(".places__list");
-
-// Функция добавления новой карточки
-
-const newPlace = document.forms["new-place"];
-
-export function addNewCard(evt) {
-  evt.preventDefault();
-
-  const placeName = newPlace.elements["place-name"];
-  const link = newPlace.elements.link;
-
-  const item = {
-    name: placeName.value,
-    link: link.value,
-  };
-
-  const newCardElement = createCard(
-    item,
-    removeCard,
-    ImagePopup,
-    buttonIsLiked,
-  );
-  placesList.prepend(newCardElement);
-
-  const popupOpened = document.querySelector(".popup_is-opened");
-  closeModal(popupOpened);
-
-  evt.target.reset();
-}
 
 const profile = document.querySelector(".profile");
 const profileInfo = profile.querySelector(".profile__info");
@@ -59,33 +30,57 @@ const formElement = document.forms["edit-profile"];
 const nameInput = formElement.elements.name;
 const jobInput = formElement.elements.description;
 
+const popupTypeImage = document.querySelector(".popup_type_image");
+const popupImage = popupTypeImage.querySelector(".popup__image");
+
 const popupTypeNewCard = document.querySelector(".popup_type_new-card");
 const popupTypeEdit = document.querySelector(".popup_type_edit");
 
-newPlace.addEventListener("submit", addNewCard);
+const newPlace = document.forms["new-place"];
+
+// Функция добавления новой карточки
+function addNewCard(evt) {
+  evt.preventDefault();
+
+  const placeName = newPlace.elements["place-name"];
+  const link = newPlace.elements.link;
+
+  const item = {
+    name: placeName.value,
+    link: link.value,
+  };
+
+  const newCardElement = createCard(
+    cardTemplate,
+    item,
+    removeCard,
+    openImagePopup,
+    likedButton,
+  );
+  placesList.prepend(newCardElement);
+
+  newPlace.closest(".popup").classList.remove("popup_is-opened");
+  evt.target.reset();
+}
+
+// Функция открытия поп-апа для картинок
+function openImagePopup(item) {
+  const popupCaption = popupTypeImage.querySelector(".popup__caption");
+
+  popupImage.src = item.link;
+  popupImage.alt = item.name;
+  popupCaption.textContent = item.name;
+  openModal(popupTypeImage);
+}
 
 // Функция редактирования профиля
-export function handleFormSubmit(evt) {
+function handleProfileFormSubmit(evt) {
   evt.preventDefault();
 
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
   closeModal(popupTypeEdit);
 }
-
-formElement.addEventListener("submit", handleFormSubmit);
-
-// Функция открытия поп-апа редактирования профиля нажатием на карандаш
-profileEditButton.addEventListener("click", () => {
-  openModal(popupTypeEdit);
-});
-
-// Функция открытия поп-апа добавления нового места нажатием на плюсик
-profileAddButton.addEventListener("click", () => {
-  openModal(popupTypeNewCard);
-});
-
-export const allPopups = document.querySelectorAll(".popup");
 
 // Функция перебора всех поп-апов для удаления класса popup_is-opened
 allPopups.forEach(function (item) {
@@ -100,11 +95,28 @@ allPopups.forEach(function (item) {
 // @todo: Вывести карточки на страницу
 initialCards.forEach(function (item) {
   const eachElement = createCard(
+    cardTemplate,
     item,
     removeCard,
-    ImagePopup,
-    buttonIsLiked,
+    openImagePopup,
+    likedButton,
     addNewCard,
   );
   placesList.append(eachElement);
 });
+
+// Функция открытия поп-апа редактирования профиля нажатием на карандаш
+profileEditButton.addEventListener("click", () => {
+  openModal(popupTypeEdit);
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
+});
+
+// Функция открытия поп-апа добавления нового места нажатием на плюсик
+profileAddButton.addEventListener("click", () => {
+  openModal(popupTypeNewCard);
+});
+
+newPlace.addEventListener("submit", addNewCard);
+
+formElement.addEventListener("submit", handleProfileFormSubmit);
