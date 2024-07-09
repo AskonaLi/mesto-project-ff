@@ -10,7 +10,6 @@ import {
 } from "./components/card.js";
 
 import {
-  allPopups,
   openModal,
   closeModal,
   closePopupOverlay,
@@ -29,6 +28,8 @@ const profileDescription = profileInfo.querySelector(".profile__description");
 const formElement = document.forms["edit-profile"];
 const nameInput = formElement.elements.name;
 const jobInput = formElement.elements.description;
+
+const allPopups = document.querySelectorAll(".popup");
 
 const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
@@ -59,7 +60,7 @@ function addNewCard(evt) {
   );
   placesList.prepend(newCardElement);
 
-  newPlace.closest(".popup").classList.remove("popup_is-opened");
+  closeModal(popupTypeNewCard);
   evt.target.reset();
 }
 
