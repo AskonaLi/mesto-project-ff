@@ -1,12 +1,10 @@
 import "./pages/index.css";
 
-import { initialCards } from "./scripts/cards.js";
+// import { initialCards } from "./scripts/cards.js";
 
 import {
   cardTemplate,
   createCard,
-  removeCard,
-  likedButton,
 } from "./components/card.js";
 
 import {
@@ -14,6 +12,10 @@ import {
   closeModal,
   closePopupOverlay,
 } from "./components/modal.js";
+
+import {enableValidation, clearValidation, popupFormElement, validationConfig, clearState} from "./components/validation.js";
+
+import {loadingProfileInfo, loadingCardsInfo, patchEditProfile, postNewCard} from "./components/api.js";
 
 // @todo: DOM узлы
 const placesList = document.querySelector(".places__list");
@@ -24,6 +26,7 @@ const profileEditButton = profileInfo.querySelector(".profile__edit-button");
 const profileAddButton = profile.querySelector(".profile__add-button");
 const profileTitle = profileInfo.querySelector(".profile__title");
 const profileDescription = profileInfo.querySelector(".profile__description");
+const profileImage = profile.querySelector('.profile__image');
 
 const formElement = document.forms["edit-profile"];
 const nameInput = formElement.elements.name;
@@ -39,6 +42,11 @@ const popupTypeEdit = document.querySelector(".popup_type_edit");
 
 const newPlace = document.forms["new-place"];
 
+
+
+
+
+
 // Функция добавления новой карточки
 function addNewCard(evt) {
   evt.preventDefault();
@@ -46,22 +54,21 @@ function addNewCard(evt) {
   const placeName = newPlace.elements["place-name"];
   const link = newPlace.elements.link;
 
-  const item = {
-    name: placeName.value,
-    link: link.value,
-  };
-
-  const newCardElement = createCard(
-    cardTemplate,
-    item,
-    removeCard,
-    openImagePopup,
-    likedButton,
-  );
-  placesList.prepend(newCardElement);
-
-  closeModal(popupTypeNewCard);
-  evt.target.reset();
+  postNewCard(placeName.value, link.value)
+  .then((item) => {
+    const newCardElement = createCard(
+      cardTemplate,
+      item,
+      openImagePopup,
+      true
+    );
+    placesList.prepend(newCardElement);
+    closeModal(popupTypeNewCard);
+    evt.target.reset();
+  })
+  .catch((error) => {
+    console.log(`Ошибка: ${error}`)
+  })
 }
 
 // Функция открытия поп-апа для картинок
@@ -77,11 +84,25 @@ function openImagePopup(item) {
 // Функция редактирования профиля
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-
   profileTitle.textContent = nameInput.value;
   profileDescription.textContent = jobInput.value;
+
+  patchEditProfile(nameInput.value, jobInput.value)
+  .then((result) => {
+    console.log(result)
+  })
+  .catch((error) => {
+    console.log(`Ошибка: ${error}`)
+  })
+
   closeModal(popupTypeEdit);
 }
+
+
+
+
+
+
 
 // Функция перебора всех поп-апов для удаления класса popup_is-opened
 allPopups.forEach(function (item) {
@@ -93,31 +114,51 @@ allPopups.forEach(function (item) {
   item.classList.add("popup_is-animated");
 });
 
-// @todo: Вывести карточки на страницу
-initialCards.forEach(function (item) {
+
+Promise.all([loadingProfileInfo(), loadingCardsInfo()])
+.then(([profileResult, cardsResult]) => {
+  console.log(profileResult);
+  console.log(cardsResult);
+
+  profileTitle.textContent = profileResult.name;
+  profileDescription.textContent = profileResult.about;
+  profileImage.src = profileResult.avatar;
+
+  // @todo: Вывести карточки на страницу
+  cardsResult.forEach(function (item) {
   const eachElement = createCard(
     cardTemplate,
     item,
-    removeCard,
     openImagePopup,
-    likedButton,
-    addNewCard,
+    profileResult._id === item.owner._id
   );
   placesList.append(eachElement);
 });
+})
+
+
+
+
 
 // Функция открытия поп-апа редактирования профиля нажатием на карандаш
 profileEditButton.addEventListener("click", () => {
   openModal(popupTypeEdit);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
+  clearValidation(popupFormElement, validationConfig);
 });
 
 // Функция открытия поп-апа добавления нового места нажатием на плюсик
 profileAddButton.addEventListener("click", () => {
   openModal(popupTypeNewCard);
+  clearValidation(popupTypeNewCard, validationConfig);
+  clearState(popupTypeNewCard);
 });
 
 newPlace.addEventListener("submit", addNewCard);
 
 formElement.addEventListener("submit", handleProfileFormSubmit);
+
+enableValidation(validationConfig);
+
+

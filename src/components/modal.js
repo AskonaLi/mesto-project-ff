@@ -1,3 +1,5 @@
+// import {hideInputError} from "../components/validation.js";
+
 // Функция добавления класса popup_is-opened
 export function openModal(item) {
   item.classList.add("popup_is-opened");
