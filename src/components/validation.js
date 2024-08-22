@@ -1,5 +1,5 @@
-export const popupFormElement = document.querySelector(".popup__form");
-const popupInput = popupFormElement.querySelector(".popup__input");
+// export const popupFormElement = document.querySelector(".popup__form");
+// const popupInput = popupFormElement.querySelector(".popup__input");
 
 // Функция, которая добавляет класс с ошибкой
 const showInputError = (
@@ -16,11 +16,11 @@ const showInputError = (
 
 // Функция, которая удаляет класс с ошибкой
 export const hideInputError = (
-  popupFormElement,
+  formElement,
   popupInput,
   validationConfig,
 ) => {
-  const formError = popupFormElement.querySelector(`.${popupInput.id}-error`);
+  const formError = formElement.querySelector(`.${popupInput.id}-error`);
   popupInput.classList.remove(validationConfig.inputErrorClass);
   if (formError) {
     formError.classList.remove(validationConfig.errorClass);
@@ -110,23 +110,4 @@ export const clearValidation = (popupFormElement, validationConfig) => {
   });
 
   toggleButtonState(inputList, buttonElement, validationConfig);
-};
-
-export const clearState = (popupFormElement) => {
-  const inputList = Array.from(
-    popupFormElement.querySelectorAll(validationConfig.popupInput),
-  );
-  inputList.forEach((popupInput) => {
-    popupInput.value = "";
-  });
-};
-
-// Объект настроек валидации
-export const validationConfig = {
-  popupFormElement: ".popup__form",
-  popupInput: ".popup__input",
-  buttonElement: ".popup__button",
-  inactiveButtonClass: ".popup__button_disabled",
-  inputErrorClass: "form__input_type_error",
-  errorClass: "form__input-error_active",
 };

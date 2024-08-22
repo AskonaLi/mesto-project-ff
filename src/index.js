@@ -11,9 +11,6 @@ import {
 import {
   enableValidation,
   clearValidation,
-  popupFormElement,
-  validationConfig,
-  clearState,
 } from "./components/validation.js";
 
 import {
@@ -24,6 +21,18 @@ import {
   deleteCardServer,
   patchAvatar,
 } from "./components/api.js";
+
+const allPopups = document.querySelectorAll(".popup");
+
+// Объект настроек валидации
+const validationConfig = {
+  popupFormElement: ".popup__form",
+  popupInput: ".popup__input",
+  buttonElement: ".popup__button",
+  inactiveButtonClass: ".popup__button_disabled",
+  inputErrorClass: "form__input_type_error",
+  errorClass: "form__input-error_active",
+};
 
 // @todo: DOM узлы
 const placesList = document.querySelector(".places__list");
@@ -40,15 +49,19 @@ const formElement = document.forms["edit-profile"];
 const nameInput = formElement.elements.name;
 const jobInput = formElement.elements.description;
 
-const allPopups = document.querySelectorAll(".popup");
-
 const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
+const popupCaption = popupTypeImage.querySelector(".popup__caption");
 
 const popupTypeNewCard = document.querySelector(".popup_type_new-card");
 const popupTypeEdit = document.querySelector(".popup_type_edit");
 
 const newPlace = document.forms["new-place"];
+const placeName = newPlace.elements["place-name"];
+const link = newPlace.elements.link;
+
+const popupFormElement = document.querySelector(".popup__form");
+// const popupInput = popupFormElement.querySelector(".popup__input");
 
 const popupAvatar = document.querySelector(".popup_type_avatar");
 const profileAvatar = document.querySelector(".profile__image");
@@ -63,9 +76,6 @@ function addNewCard(evt) {
   const defaultTextButton = formButton.textContent;
   formButton.textContent = "Сохранение...";
 
-  const placeName = newPlace.elements["place-name"];
-  const link = newPlace.elements.link;
-
   postNewCard(placeName.value, link.value)
     .then((item) => {
       const newCardElement = createCard(
@@ -79,6 +89,7 @@ function addNewCard(evt) {
       placesList.prepend(newCardElement);
       closeModal(popupTypeNewCard);
       evt.target.reset();
+      clearValidation(popupTypeNewCard, validationConfig);
     })
     .catch((error) => {
       console.log(`Ошибка: ${error}`);
@@ -90,7 +101,6 @@ function addNewCard(evt) {
 
 // Функция открытия поп-апа для картинок
 function openImagePopup(item) {
-  const popupCaption = popupTypeImage.querySelector(".popup__caption");
 
   popupImage.src = item.link;
   popupImage.alt = item.name;
@@ -133,7 +143,8 @@ allPopups.forEach(function (item) {
 });
 
 // Вывод данных о профиле и карточках с сервера
-Promise.all([loadingProfileInfo(), loadingCardsInfo()]).then(
+Promise.all([loadingProfileInfo(), loadingCardsInfo()])
+  .then(
   ([profileResult, cardsResult]) => {
     console.log(profileResult);
     console.log(cardsResult);
@@ -155,7 +166,20 @@ Promise.all([loadingProfileInfo(), loadingCardsInfo()]).then(
       placesList.append(eachElement);
     });
   },
-);
+)
+  .catch((error) => {
+    console.log(`Ошибка: ${error}`);
+  })
+
+  // Функция очистки полей формы
+  export const clearState = (popupFormElement) => {
+    const inputList = Array.from(
+      popupFormElement.querySelectorAll(validationConfig.popupInput),
+    );
+    inputList.forEach((popupInput) => {
+      popupInput.value = "";
+    });
+  };
 
 // Вызов функции редактирования аватара
 avatarForm.addEventListener("submit", function (evt) {
@@ -169,8 +193,8 @@ avatarForm.addEventListener("submit", function (evt) {
       closeModal(popupAvatar);
       evt.target.reset();
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((error) => {
+      console.log(`Ошибка: ${error}`);
     })
     .finally(() => {
       formButton.textContent = defaultTextButton;
@@ -182,7 +206,7 @@ profileEditButton.addEventListener("click", () => {
   openModal(popupTypeEdit);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
-  clearValidation(popupFormElement, validationConfig);
+  clearValidation(formElement, validationConfig);
 });
 
 // Вызов функции открытия поп-апа добавления нового места нажатием на плюсик
@@ -196,6 +220,7 @@ profileAddButton.addEventListener("click", () => {
 profileImage.addEventListener("click", function () {
   openModal(popupAvatar);
   clearValidation(avatarForm, validationConfig);
+  clearState(popupAvatar);
 });
 
 // Вызов функции добавления новой карточки

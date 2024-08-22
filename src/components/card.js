@@ -43,9 +43,9 @@ export function createCard(
       .then(() => {
         removeCard(evt);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((error) => {
+        console.log(`Ошибка: ${error}`);
+      })
   });
 
   // Вызов функции постановки лайка
@@ -70,15 +70,23 @@ export function removeCard(evt) {
 // Функция лайка
 export function likedButton(evt, item, likesCounter) {
   if (evt.target.classList.contains("card__like-button_is-active")) {
-    deleteLike(item._id).then((res) => {
+    deleteLike(item._id)
+    .then((res) => {
       evt.target.classList.remove("card__like-button_is-active");
       likesCounter.textContent = res.likes.length;
-    });
+    })
+    .catch((error) => {
+      console.log(`Ошибка: ${error}`);
+    })
   } else {
-    putLike(item._id).then((res) => {
+    putLike(item._id)
+    .then((res) => {
       evt.target.classList.add("card__like-button_is-active");
       likesCounter.textContent = res.likes.length;
       console.log(item.likes);
-    });
+    })
+    .catch((error) => {
+      console.log(`Ошибка: ${error}`);
+    })
   }
 }
