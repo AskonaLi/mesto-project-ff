@@ -1,6 +1,3 @@
-// export const popupFormElement = document.querySelector(".popup__form");
-// const popupInput = popupFormElement.querySelector(".popup__input");
-
 // Функция, которая добавляет класс с ошибкой
 const showInputError = (
   popupFormElement,
@@ -15,11 +12,7 @@ const showInputError = (
 };
 
 // Функция, которая удаляет класс с ошибкой
-export const hideInputError = (
-  formElement,
-  popupInput,
-  validationConfig,
-) => {
+export const hideInputError = (formElement, popupInput, validationConfig) => {
   const formError = formElement.querySelector(`.${popupInput.id}-error`);
   popupInput.classList.remove(validationConfig.inputErrorClass);
   if (formError) {

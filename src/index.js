@@ -8,10 +8,7 @@ import {
   closePopupOverlay,
 } from "./components/modal.js";
 
-import {
-  enableValidation,
-  clearValidation,
-} from "./components/validation.js";
+import { enableValidation, clearValidation } from "./components/validation.js";
 
 import {
   loadingProfileInfo,
@@ -136,8 +133,7 @@ allPopups.forEach(function (item) {
 
 // Вывод данных о профиле и карточках с сервера
 Promise.all([loadingProfileInfo(), loadingCardsInfo()])
-  .then(
-  ([profileResult, cardsResult]) => {
+  .then(([profileResult, cardsResult]) => {
     console.log(profileResult);
     console.log(cardsResult);
 
@@ -157,21 +153,20 @@ Promise.all([loadingProfileInfo(), loadingCardsInfo()])
       );
       placesList.append(eachElement);
     });
-  },
-)
+  })
   .catch((error) => {
     console.log(`Ошибка: ${error}`);
-  })
+  });
 
-  // Функция очистки полей формы
-  export const clearState = (inputElement) => {
-    const inputList = Array.from(
-      inputElement.querySelectorAll(validationConfig.popupInput),
-    );
-    inputList.forEach((popupInput) => {
-      popupInput.value = "";
-    });
-  };
+// Функция очистки полей формы
+export const clearState = (inputElement) => {
+  const inputList = Array.from(
+    inputElement.querySelectorAll(validationConfig.popupInput),
+  );
+  inputList.forEach((popupInput) => {
+    popupInput.value = "";
+  });
+};
 
 // Вызов функции редактирования аватара
 avatarForm.addEventListener("submit", function (evt) {
