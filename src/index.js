@@ -60,9 +60,6 @@ const newPlace = document.forms["new-place"];
 const placeName = newPlace.elements["place-name"];
 const link = newPlace.elements.link;
 
-const popupFormElement = document.querySelector(".popup__form");
-// const popupInput = popupFormElement.querySelector(".popup__input");
-
 const popupAvatar = document.querySelector(".popup_type_avatar");
 const profileAvatar = document.querySelector(".profile__image");
 const avatarForm = document.forms["avatar-form"];
@@ -71,7 +68,6 @@ const avatarInputUrl = avatarForm.elements.link;
 // Функция добавления новой карточки
 function addNewCard(evt) {
   evt.preventDefault();
-
   const formButton = evt.submitter;
   const defaultTextButton = formButton.textContent;
   formButton.textContent = "Сохранение...";
@@ -101,7 +97,6 @@ function addNewCard(evt) {
 
 // Функция открытия поп-апа для картинок
 function openImagePopup(item) {
-
   popupImage.src = item.link;
   popupImage.alt = item.name;
   popupCaption.textContent = item.name;
@@ -115,12 +110,11 @@ function handleProfileFormSubmit(evt) {
   const defaultTextButton = formButton.textContent;
   formButton.textContent = "Сохранение...";
 
-  profileTitle.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
-
   patchEditProfile(nameInput.value, jobInput.value)
-    .then((result) => {
-      console.log(result);
+    .then(() => {
+      profileTitle.textContent = nameInput.value;
+      profileDescription.textContent = jobInput.value;
+      closeModal(popupTypeEdit);
     })
     .catch((error) => {
       console.log(`Ошибка: ${error}`);
@@ -128,8 +122,6 @@ function handleProfileFormSubmit(evt) {
     .finally(() => {
       formButton.textContent = defaultTextButton;
     });
-
-  closeModal(popupTypeEdit);
 }
 
 // Функция перебора всех поп-апов для удаления класса popup_is-opened
@@ -172,9 +164,9 @@ Promise.all([loadingProfileInfo(), loadingCardsInfo()])
   })
 
   // Функция очистки полей формы
-  export const clearState = (popupFormElement) => {
+  export const clearState = (inputElement) => {
     const inputList = Array.from(
-      popupFormElement.querySelectorAll(validationConfig.popupInput),
+      inputElement.querySelectorAll(validationConfig.popupInput),
     );
     inputList.forEach((popupInput) => {
       popupInput.value = "";
