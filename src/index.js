@@ -140,6 +140,7 @@ Promise.all([loadingProfileInfo(), loadingCardsInfo()])
     profileTitle.textContent = profileResult.name;
     profileDescription.textContent = profileResult.about;
     profileImage.style.backgroundImage = `url(${profileResult.avatar})`;
+    const userId = profileResult._id;
 
     // @todo: Вывести карточки на страницу
     cardsResult.forEach(function (item) {
@@ -148,7 +149,7 @@ Promise.all([loadingProfileInfo(), loadingCardsInfo()])
         item,
         openImagePopup,
         likedButton,
-        profileResult,
+        userId,
         deleteCardServer,
       );
       placesList.append(eachElement);

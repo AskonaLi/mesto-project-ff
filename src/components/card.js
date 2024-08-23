@@ -9,7 +9,7 @@ export function createCard(
   item,
   openImagePopup,
   likedButton,
-  profileResult,
+  userId,
   deleteCardServer,
 ) {
   const cardElement = cardTemplate
@@ -28,12 +28,12 @@ export function createCard(
   likesCounter.textContent = item.likes.length;
 
   // Скрыть кнопку удаления, если карточку загрузил не я
-  if (profileResult._id !== item.owner._id) {
+  if (userId !== item.owner._id) {
     deleteButton.classList.add("inactive");
   }
 
   // Закрасить кнопку лайка там, где я его поставил
-  if (item.likes.some((like) => like._id === profileResult._id)) {
+  if (item.likes.some((like) => like._id === userId)) {
     cardLikeButton.classList.add("card__like-button_is-active");
   }
 
