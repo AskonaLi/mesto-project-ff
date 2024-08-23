@@ -76,9 +76,10 @@ function addNewCard(evt) {
         item,
         openImagePopup,
         likedButton,
-        item.owner,
+        item.owner._id,
         deleteCardServer,
       );
+      console.log(item.owner);
       placesList.prepend(newCardElement);
       closeModal(popupTypeNewCard);
       evt.target.reset();
