@@ -1,5 +1,3 @@
-// import {hideInputError} from "../components/validation.js";
-
 // Функция добавления класса popup_is-opened
 export function openModal(item) {
   item.classList.add("popup_is-opened");
@@ -19,6 +17,7 @@ export function closeByEsc(evt) {
   }
 }
 
+// Функция закрытия кликом на оверлей
 export function closePopupOverlay(evt) {
   if (evt.currentTarget === evt.target) {
     closeModal(evt.target);
